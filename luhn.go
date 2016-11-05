@@ -15,7 +15,7 @@ func Compute(number string) (string, error) {
 
 	fmt.Printf("Compute Input: %v, len(%v)\n", number, len(number))
 
-	return compute(number)
+	return compute(number), nil
 }
 
 // Check checks if the number is valid by the Luhn algorithm.
@@ -23,15 +23,13 @@ func Check(number string) (bool, error) {
 	if verifyNumeric(number) == false {
 		return false, fmt.Errorf("Error, input string '%v' not numeric.", number)
 	}
-	checksum, err := compute(number[0 : len(number)-1])
-	if err != nil {
-		return false, err
-	}
+	checksum := compute(number[0 : len(number)-1])
+
 	fmt.Printf("Check: Returned checksum %#v, Input checksum %#v\n", checksum, number[len(number)-1:])
 	return checksum == number[len(number)-1:], nil
 }
 
-func compute(number string) (string, error) {
+func compute(number string) string {
 	sum := 0
 	mod := len(number) % 2
 	for i, charByte := range number {
@@ -50,7 +48,7 @@ func compute(number string) (string, error) {
 	}
 	fmt.Printf("Sum is %v\n", sum)
 	checkDigit := fmt.Sprintf("%d", (10-(sum%10))%10)
-	return checkDigit, nil
+	return checkDigit
 }
 
 func verifyNumeric(s string) bool {
