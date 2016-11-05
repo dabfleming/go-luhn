@@ -2,9 +2,10 @@ package luhn
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 )
+
+var evenDigits = []int{0, 2, 4, 6, 8, 1, 3, 5, 7, 9}
 
 // Compute computes the Luhn checksum of the number provided.
 func Compute(number string) (string, error) {
@@ -32,25 +33,18 @@ func Check(number string) (bool, error) {
 
 func compute(number string) (string, error) {
 	sum := 0
+	mod := len(number) % 2
 	for i, charByte := range number {
-		digit, err := strconv.Atoi(string(charByte))
-		if err != nil {
-			return "", err
-		}
-		fmt.Printf("%2d: %v - ", i, digit)
+		fmt.Printf("%2d: %v - ", i, string(charByte))
 
-		if (len(number)-i)%2 == 0 {
+		if i%2 == mod {
 			// Odd digit - add
 			fmt.Print("odd, add")
-			sum += digit
+			sum += int(charByte - '0')
 		} else {
 			// Even digit - double and add the digits, then add
 			fmt.Print("even, double and add the digits")
-			if digit*2 > 9 {
-				sum += digit*2 - 9
-			} else {
-				sum += digit * 2
-			}
+			sum += evenDigits[charByte-'0']
 		}
 		fmt.Println()
 	}
