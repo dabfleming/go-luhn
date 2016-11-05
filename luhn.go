@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// Pre-compute the resulting sum for the even digits. (Multiply by 2, add the digits.)
 var evenDigits = []int{0, 2, 4, 6, 8, 1, 3, 5, 7, 9}
 
 // Compute computes the Luhn checksum of the number provided.
@@ -12,8 +13,6 @@ func Compute(number string) (string, error) {
 	if verifyNumeric(number) == false {
 		return "", fmt.Errorf("Error, input string '%v' not numeric.", number)
 	}
-
-	fmt.Printf("Compute Input: %v, len(%v)\n", number, len(number))
 
 	return compute(number), nil
 }
@@ -23,30 +22,25 @@ func Check(number string) (bool, error) {
 	if verifyNumeric(number) == false {
 		return false, fmt.Errorf("Error, input string '%v' not numeric.", number)
 	}
-	checksum := compute(number[0 : len(number)-1])
 
-	fmt.Printf("Check: Returned checksum %#v, Input checksum %#v\n", checksum, number[len(number)-1:])
+	checksum := compute(number[0 : len(number)-1])
 	return checksum == number[len(number)-1:], nil
 }
 
 func compute(number string) string {
 	sum := 0
 	mod := len(number) % 2
-	for i, charByte := range number {
-		fmt.Printf("%2d: %v - ", i, string(charByte))
 
+	for i, charByte := range number {
 		if i%2 == mod {
-			// Odd digit - add
-			fmt.Print("odd, add")
+			// Odd digit - add value
 			sum += int(charByte - '0')
 		} else {
-			// Even digit - double and add the digits, then add
-			fmt.Print("even, double and add the digits")
+			// Even digit - add pre-computed value
 			sum += evenDigits[charByte-'0']
 		}
-		fmt.Println()
 	}
-	fmt.Printf("Sum is %v\n", sum)
+
 	checkDigit := fmt.Sprintf("%d", (10-(sum%10))%10)
 	return checkDigit
 }
